@@ -6,22 +6,38 @@ print(' ')
 print('------------------------------------------------------------------------------------------')
 print('-------------------------Bienvenido a Potome DayZ Change 1.07-------------------by.PotoBW-')
 print('------------------------------------------------------------------------------------------')
-print('-----------Este programa te permitirá cambiar el IP de conexión con el servidor-----------')
+print('-----Este programa te permitirá cambiar las configuraciones del "Launcher" del juego------')
 print('------------------------------------------------------------------------------------------')
 print(' ')
-a = True
-c = '!Start_client_parameters.ini'
-while (a):
-    b = input('¿El nombre del archivo de configuración es '' + c + ''? ( s=si / n=no ):').lower()
+valNombre = True #variable para validar el nombre del archivo
+#Cargamos el nombre guardado por primera vez en config
+config = configparser.ConfigParser()
+config.read("PDC/config.ini")
+nombreArchivo = config['archivo']['nombre']
+print('-------------------------------------------------------------------------------------------')
+print('- Todos los archivos de este programa deben estar en la raíz del juego de lo contrario no -')
+print('- funcionará, si no es asi por favor cierre la consola y copie los archivos en el lugar   -')
+print('- correcto.                                                                               -')
+print('-------------------------------------------------------------------------------------------')
+print(' ')
+#Empezamos a validar el nombre
+while (valNombre):
+    siNo = input('¿El nombre del archivo de configuración es -- ' + nombreArchivo + ' --? ( s=si / n=no ):').lower()#introducimos un si o un no para saber si el nombre cambia
     print(' ')
-    if b == 'n':
-        e = True
-        while (e):
-            c = input('Introduzca el nuevo nombre del archivo de configuración:  ').lower()
+    if siNo == 'n':#Si es no introducimos un nombre nuevo
+        valNewNombre = True#Validador de que el nuevo nombre exista
+        while (valNewNombre):#repite la pregunta si el nuevo nombre no existe
+            nombreArchivo = input('Introduzca el nuevo nombre del archivo de configuración:  ').lower()#introduciomos el nuevo nombre
             print(' ')
-            e = not os.path.isfile(c)
-            a = False
-    elif not b == 's':
+            valNewNombre = not os.path.isfile(nombreArchivo)#comprobar si existe el archivo
+            valNombre = False#cerrar el while
+        #guardar el nuevo nombre
+        config['archivo']['nombre'] = nombreArchivo
+        with open("PDC/config.ini", 'w') as archivoconfig:
+            config.write(archivoconfig)
+        archivoconfig.close()
+
+    elif not siNo == 's':#lanzar en error en caso de no haber puesto un s para si o una n para no
         print('------------------------------------------------------------------------------------------')
         print('------------------------------░█▀▀▀ ░█▀▀█ ░█▀▀█ ░█▀▀▀█ ░█▀▀█------------------------------')
         print('------------------------------░█▀▀▀ ░█▄▄▀ ░█▄▄▀ ░█──░█ ░█▄▄▀------------------------------')
@@ -31,9 +47,10 @@ while (a):
         print('Debes escribir ( s=si / n=no )')
         print(' ')
     else:
-        a = False
+        valNombre = False#cerrar el while del nombre del archivo
+
 d = configparser.ConfigParser()
-d.read(c, encoding='utf-16')
+d.read(nombreArchivo, encoding='utf-16')
 f = d['Launcher']['CommandLine']
 print('------------------------------------------------------------------------------------------')
 print('---------------------------El archivo a sido cargado con éxito----------------------------')
@@ -47,7 +64,7 @@ print('-------------------------------------------------------------------------
 print(' ')
 f = f.replace(h, i)
 d['Launcher']['CommandLine'] = f
-with open(c, 'w', encoding='utf-16') as archivoconfig:
+with open(nombreArchivo, 'w', encoding='utf-16') as archivoconfig:
     d.write(archivoconfig)
 archivoconfig.close()
 print('------------------------------------------------------------------------------------------')
